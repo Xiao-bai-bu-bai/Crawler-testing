@@ -45,12 +45,14 @@ def get_video_list(index_url):
 
 if __name__ == '__main__':
     path = 'E:\python-learn\爬虫\简单练习\夜猫爬虫\虎牙视频\虎牙视频'
-    index_url = 'https://www.huya.com/video/g/lolydzy'
-    video_id_lists = get_video_list(index_url)
-    url = 'https://liveapi.huya.com/moment/getMomentContent'
-    for video_id in tqdm(video_id_lists):
-        data['videoId'] = video_id
-        info_json, filename = paly_video(url)
-        download_video(info_json, filename, path)
-        time.sleep(1)
+    # index_url = 'https://www.huya.com/video/g/lolydzy'
+    for i in tqdm(range(1, 500)):
+        index_url = f'https://www.huya.com/video/g/lolydzy?set_id=4&order=hot&page={i}'
+        video_id_lists = get_video_list(index_url)
+        url = 'https://liveapi.huya.com/moment/getMomentContent'
+        for video_id in tqdm(video_id_lists):
+            data['videoId'] = video_id
+            info_json, filename = paly_video(url)
+            download_video(info_json, filename, path)
+            time.sleep(1)
 
