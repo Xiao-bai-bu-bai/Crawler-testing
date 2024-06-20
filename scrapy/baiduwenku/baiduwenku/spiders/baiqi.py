@@ -9,13 +9,12 @@ class BaiqiSpider(scrapy.Spider):
 
     def parse(self, response, **kwargs):
         # 提取标题
-        title = response.xpath('//h1[@class="lemmaTitle_R6fN2 J-lemma-title"]/text()').extract_first()
+        title = response.xpath('//*[@id="J-lemma-main-wrapper"]/div[1]/div/div/div[1]/div[1]/div[1]/h1/text()').extract_first()
         # 提取标签
-        posts = response.xpath('//div[@class="lemmaDescText_R2wZ_"]/text()').extract_first()
-
-
+        posts = response.xpath('//*[@id="lemmaDesc"]/div[1]/text()').extract_first()
         # 提取所有文本中div元素
-        divs = response.xpath('//div[@class="lemmaSummary_I6sFF J-summary"]/div')
+
+        divs = response.xpath('//*[@id="J-lemma-main-wrapper"]/div[2]/div/div[1]/div/div[2]/div')
 
         # 初始化一个空列表来存储处理后的文本
         substances = []

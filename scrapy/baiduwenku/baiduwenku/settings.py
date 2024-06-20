@@ -14,6 +14,14 @@ NEWSPIDER_MODULE = "baiduwenku.spiders"
 
 LOG_LEVEL = "WARNING"  # 日志级别
 
+MySql = {
+    "host": "localhost",
+    "port": 3306,
+    "user": "root",
+    "password": "root",
+    "database": "spider",
+}
+
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "baiduwenku (+http://www.yourdomain.com)"
@@ -66,6 +74,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    "baiduwenku.pipelines.BaiduwenkuPipeline": 300,
+   "baiduwenku.pipelines.BaiduMysqlPipeline": 301,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
