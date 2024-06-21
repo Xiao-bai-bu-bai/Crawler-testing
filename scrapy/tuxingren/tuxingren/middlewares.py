@@ -4,6 +4,8 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from random import choice
+from tuxingren.settings import USER_AGENT_LIST
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
@@ -69,15 +71,9 @@ class TuxingrenDownloaderMiddleware:
         return s
 
     def process_request(self, request, spider):
-        # Called for each request that goes through the downloader
-        # middleware.
-
-        # Must either:
-        # - return None: continue processing this request
-        # - or return a Response object
-        # - or return a Request object
-        # - or raise IgnoreRequest: process_exception() methods of
-        #   installed downloader middleware will be called
+        # 随机选择一个User-Agent
+        choice_user_agent = choice(USER_AGENT_LIST)
+        request.headers['User-Agent'] = choice_user_agent
         return None
 
     def process_response(self, request, response, spider):
