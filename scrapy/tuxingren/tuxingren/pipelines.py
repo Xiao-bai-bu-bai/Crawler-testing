@@ -16,8 +16,9 @@ class TuxingrenPipeline(ImagesPipeline):
 
     def file_path(self, request, response=None, info=None, item=None):
         img_name = item['img_name']
+        kind_name = item['kind_name']
         print(img_name)
-        return f'元素图片\\{img_name}.jpg'  # 从请求的meta中取出图片名称
+        return f'{kind_name}\\{img_name}.jpg'  # 从请求的meta中取出图片名称
 
     def item_completed(self, results, item, info):
         pass

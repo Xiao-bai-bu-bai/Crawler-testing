@@ -11,4 +11,5 @@ class TuxingrenItem(scrapy.Item):
     # name = scrapy.Field()
     img_url = scrapy.Field()
     img_name = scrapy.Field()
+    kind_name = scrapy.Field()
 
