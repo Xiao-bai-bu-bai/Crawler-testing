@@ -10,6 +10,19 @@ class YuansuSpider(scrapy.Spider):
         a_hrefs = response.xpath('//div[@class="box data-info"]/div[1]/a/@href').extract()
         for a_href in a_hrefs:
             yield scrapy.Request(url=a_href, method='get', callback=self.parse_detail)
+            break
+
+        # 获取下一页的url，判断是否为下一页
+        next_page = response.xpath('//div[@class="main-page-box"]/a[contains(text(), "下一页")]/@href').extract_first()
+        #  拼接完整的url
+        next_page = response.urljoin(next_page)
+        print(next_page)
+
+        #  判断是否为下一页
+        if next_page:
+            yield scrapy.Request(next_page, callback=self.parse)
+
+
 
     def parse_detail(self, response, **kwargs):
         img_url = response.xpath('//div[@class="work-img-box"]/img/@src').extract_first()
