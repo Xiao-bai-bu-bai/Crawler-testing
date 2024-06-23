@@ -927,6 +927,26 @@ ITEM_PIPELINES = {
    "tuxingren.pipelines.TuxingrenPipeline": 300,
 }
 
+# redis相关配置
+REDIS_HOST = '127.0.0.1'
+REDIS_PORT = 6379
+REDIS_DB = 1
+REDIS_PARAMS = {
+    'password': '666666',
+}
+# scrapy_redis配置
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"  # 调度器
+SCHEDULER_PERSIST = True  # 如果设置为True，当爬虫结束时，不会清空Redis中的请求队列和去重指纹集合
+# DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"  # 去重类(自带的指纹过滤器)，要使用Redis去重，不要使用scrapy默认的去重类
+
+# 使用BloomFilter过滤器可以节省内存，但是会有一定的误判率
+DUPEFILTER_CLASS = "scrapy_redis_bloomfilter.dupefilter.RFPDupeFilter"
+# 指纹过滤器的哈希函数个数
+BLOOMFILTER_HASH_NUMBER = 6
+# 指纹过滤器的bit参数，占用128MB内存，去重量级为1亿
+BLOOMFILTER_BIT = 30
+
+
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 # AUTOTHROTTLE_ENABLED = True  #自动限速扩展
