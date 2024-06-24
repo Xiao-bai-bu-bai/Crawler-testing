@@ -1,7 +1,9 @@
 import scrapy
-from scrapy_redis.spiders import RedisSpider
-from tuxingren.items import TuxingrenItem
 from redis import Redis
+from scrapy_redis.spiders import RedisSpider
+
+from tuxingren.items import TuxingrenItem
+from tuxingren.request import SeleniumRequest
 
 
 class YuansuSpider(RedisSpider):
@@ -9,14 +11,33 @@ class YuansuSpider(RedisSpider):
     allowed_domains = ["txrpic.com"]
     # start_urls = ["https://www.txrpic.com/"]
     redis_key = 'tuxingren:yuansu:start_urls'
+
     def __init__(self, name=None, **kwargs):
         super(YuansuSpider, self).__init__(name, **kwargs)
+
         try:
             self.redis = Redis(host='localhost', port=6379, db=1, password='666666', decode_responses=True)
             self.redis.ping()
             self.logger.warning("已成功连接到 Redis。")
+
+            # 使用lpush命令将URL添加到指定的列表中
+            self.redis.lpush('tuxingren:yuansu:start_urls', 'https://www.txrpic.com/')
+
+            self.logger.warning("已成功添加URL到 Redis。")
+
         except Exception as e:
             self.logger.error(f"无法连接到 Redis: {e}")
+
+    def start_requests(self):
+        # 从Redis中获取起始URL
+        start_url = self.redis.lpop(self.redis_key)
+        if start_url:
+            yield SeleniumRequest(
+                url=start_url,
+                callback=self.parse
+            )
+        else:
+            self.logger.warning("Redis 中没有可用的起始 URL。")
 
     def parse(self, response, **kwargs):
         # 提取所有分类的url和名称

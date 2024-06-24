@@ -912,7 +912,7 @@ COOKIES_ENABLED = False  #是否启用cookies
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-   "tuxingren.middlewares.TuxingrenDownloaderMiddleware": 543,
+   "tuxingren.middlewares.TuxingrenDownloaderMiddleware": 99,
 }
 
 # Enable or disable extensions

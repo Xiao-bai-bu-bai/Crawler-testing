@@ -5,6 +5,12 @@
 
 from scrapy import signals
 from random import choice
+from scrapy.http.response.html import HtmlResponse
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver import Chrome
+import time
+from tuxingren.request import SeleniumRequest
 from tuxingren.settings import USER_AGENT_LIST
 
 # useful for handling different item types with a single interface
@@ -68,13 +74,28 @@ class TuxingrenDownloaderMiddleware:
         # This method is used by Scrapy to create your spiders.
         s = cls()
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(s.spider_closed, signal=signals.spider_closed)
         return s
 
     def process_request(self, request, spider):
         # 随机选择一个User-Agent
         choice_user_agent = choice(USER_AGENT_LIST)
         request.headers['User-Agent'] = choice_user_agent
-        return None
+        if isinstance(request, SeleniumRequest):
+            try:
+                self.web.get(request.url)
+                page_source = self.web.page_source
+                return HtmlResponse(
+                    url=self.web.current_url,  # 能够获取到浏览器实际访问的URL，无论是否发生了跳转
+                    body=page_source,
+                    encoding="utf-8",
+                    request=request
+                )
+            except WebDriverException as e:
+                spider.logger.error(f"WebDriverException: {e}")
+                return None
+        else:
+            return None
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
@@ -96,4 +117,13 @@ class TuxingrenDownloaderMiddleware:
         pass
 
     def spider_opened(self, spider):
-        spider.logger.info("Spider opened: %s" % spider.name)
+        chrome_options = Options()
+        # chrome_options.add_argument("--headless")  # 使用无头模式
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        self.web = Chrome(options=chrome_options)
+
+    def spider_closed(self, spider):
+        if hasattr(self, 'web'):
+            self.web.quit()
+
